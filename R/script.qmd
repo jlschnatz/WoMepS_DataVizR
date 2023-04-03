@@ -1,0 +1,166 @@
+---
+title     : "WoMeps Script"
+title-block-style: default
+subtitle  : "Itemanalyse"
+author    : "Arieja Farugie & Luca Schnatz"
+date: "`r Sys.Date()`"
+
+  
+code-overflow: wrap
+code-block-bg: true
+code-block-border-left: "#8800FF"
+smooth-scroll: true
+
+#theme: cosmo
+format: 
+  html:
+    self-contained: true
+toc: true
+touch: true
+theme: lux
+toc-title: "Inhalt"
+highlight-style: printing
+---
+
+# ggplot-Basics Mechanics
+
+```{r}
+library(here)
+library(tidyverse)
+data_hfi <- read_csv(here("data/HFI/human-freedom-index-2022.csv"))
+
+ggplot(
+  data = data_hfi,
+)
+
+ggplot(
+  data = data_hfi,
+  mapping = aes(x = year, y = hf_score)
+)
+
+ggplot(
+  data = data_hfi,
+  mapping = aes(x = pf_score, y = ef_score)
+) + 
+  geom_point()
+
+ggplot(
+  data = data_hfi,
+  mapping = aes(x = pf_score, y = ef_score, color = region)
+) + 
+  geom_point()
+
+
+ggplot(
+  data = data_hfi,
+  mapping = aes(x = pf_score, y = ef_score, color = region)
+) + 
+  geom_point() + 
+  facet_wrap(~region)
+
+```
+
+# Geometries
+- Beispiele von verschiedenen geometrischen Objekten in ggplot2
+- fangen  mit **geom**_objekt an
+
+```{r}
+ggplot(
+  data = data_hfi,
+  mapping = aes(x = pf_score, y = ef_score)
+) + 
+  geom_point() 
+
+
+data_hfi %>%
+  group_by(year) %>%
+  summarise(mean_hf_score = mean(hf_score, na.rm = TRUE)) %>%
+ggplot(
+  data = .,
+  mapping = aes(x = year, y = mean_hf_score)
+) + 
+  geom_line() + # unterschiede zwischen geom_line und geom_path erklären
+  geom_point()
+
+data_hfi %>%
+  filter(year == 2020) %>%
+  ggplot(aes(x = fct_reorder(region, hf_score), y = hf_score)) +
+  geom_boxplot()
+
+ggplot(
+  data = data_hfi,
+  aes(x = region)
+) + 
+  geom_bar()
+  
+ggplot(
+  data = data_hfi,
+  aes(x = hf_score)
+) + 
+  geom_histogram()
+
+ggplot(
+  data = data_hfi,
+  aes(x = hf_score)
+) + 
+  geom_density()
+
+
+ggplot(
+  data = data_hfi,
+  aes(x = region, y = hf_score)
+) + 
+  geom_violin(scale = "width")
+
+ggplot(
+  data = data_hfi,
+  aes(x = hf_score, y = hf_rank)
+) + 
+  geom_point() +
+  geom_smooth()
+```
+
+
+
+# Scales
+- x, y scale
+- color, fill scale
+- shape
+- size
+- alpha
+
+
+
+# Small Multiples
+
+- Unterschiede zwischen facet_wrap() und facet_grid() erklären
+- Wann sind small multiples sinnvoll?
+
+```{r}
+data_hfi %>%
+  ggplot(aes(x = pf_score, y = ef_score)) + 
+  geom_point() + 
+  facet_wrap(~region)
+```
+
+
+# Theming
+
+```{r}
+p <- data_hfi %>%
+  ggplot(aes(x = pf_score, y = ef_score)) + 
+  geom_point() + 
+  facet_wrap(~region)
+
+p + theme_minimal()
+p + theme_classic() 
+p + theme_light()
+p + theme_dark()
+
+library(ggthemes) # zusätzliche themes
+
+p + theme_fivethirtyeight()
+p + theme_clean()
+p + theme_hc()
+```
+

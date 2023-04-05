@@ -23,19 +23,76 @@ highlight-style: printing
 ---
 
 ```{r}
+#| message: false
 library(tidyverse)
 library(here)
 
 exercise_data <- read_csv(here("data/exercise_data/exercise_data.csv"))
 
-
 ```
 
+-   Welche Basics Plots sollten besprochen werden?
+-   Barplot, Scatter, Boxplot, Density, Histogramm, Pie
+
 ```{r}
+
 ggplot(
   data = exercise_data,
   aes(x = V601)
 ) + 
-  geom_bar()
-```
+  geom_bar() # im advanced teil -> grouped, stacked barplots nach gruppierung, farbe, facets
 
+
+# auf die Probleme von Pie und Donought Chart eingehen 
+count(exercise_data, V601) %>%
+  drop_na() %>%
+  ggplot(
+    data = .,
+    aes(x = "",y = n, group = V601, fill = V601)
+    ) + 
+    geom_bar(stat="identity", width=1) +
+    coord_polar("y", start=0) # im advanced teil dann mit Text als Labels?
+
+
+ggplot(
+  data = exercise_data,
+  aes(x = V417)
+) + 
+  geom_histogram(bins = 200)
+
+ggplot(
+  data = exercise_data,
+  aes(x = V417)
+) + 
+  geom_density()
+
+ggplot(
+  data = exercise_data,
+  aes(x = V172)
+) + 
+  geom_bar()
+
+
+# für advanced teil -> manchmal besser lolipop chart statt bar-plot bei sehr vielen kategorien
+
+
+exercise_data %>%
+  count(V868) %>%
+  drop_na() %>%
+  ggplot(
+    data = .,
+    aes(y = fct_reorder(V868, n), x = n) 
+  ) + 
+  geom_bar(stat = "identity", width = 0.025, color = "black") +
+  geom_point(size = 3)
+
+
+exercise_data %>%
+  filter(V417 <= 20000 & V497 <= 20000) %>%
+  ggplot(
+    data = .,
+    aes(x = V497, y = V417)
+  ) + 
+  geom_point()
+ 
+```

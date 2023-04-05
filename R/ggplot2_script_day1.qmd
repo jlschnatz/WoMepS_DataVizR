@@ -1,0 +1,41 @@
+---
+title: "Workshop: ggplot2 (Tag 1)"
+title-block-style: default
+subtitle  : "Itemanalyse"
+author    : "Arieja Farugie & Luca Schnatz"
+date: "`r Sys.Date()`"
+
+  
+code-overflow: wrap
+code-block-bg: true
+code-block-border-left: "#8800FF"
+smooth-scroll: true
+
+#theme: cosmo
+format: 
+  html:
+    self-contained: true
+toc: true
+touch: true
+theme: lux
+toc-title: "Inhalt"
+highlight-style: printing
+---
+
+```{r}
+library(tidyverse)
+library(here)
+
+exercise_data <- read_csv(here("data/exercise_data/exercise_data.csv"))
+
+
+```
+
+```{r}
+ggplot(
+  data = exercise_data,
+  aes(x = V601)
+) + 
+  geom_bar()
+```
+

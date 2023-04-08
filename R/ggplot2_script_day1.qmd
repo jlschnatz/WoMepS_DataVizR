@@ -22,6 +22,9 @@ toc-title: "Inhalt"
 highlight-style: printing
 ---
 
+
+Zunächst laden wir den Datensatz:
+
 ```{r}
 #| message: false
 library(tidyverse)
@@ -29,16 +32,27 @@ library(here)
 
 exercise_data <- read_csv(here("data/exercise_data/exercise_data.csv"))
 
+glimpse(exercise_data)
+
+# colnames(exercise_data) <- c("id", "sex", "alter", "familienstand", "netto_einkommen", "einkommen_binned",
+#   "brutto_einkommen", "religion", "erwerb1", "erwerb2", "abschluss", "vollteilzeit",
+#   "angstellung", "staatsangehörigkeit", "ka1", "bundesland", "bundesland_neualt",
+#   "soziale_schicht", "ka2", paste0("ka", seq(3, 14))
+# )
+
 ```
 
 -   Welche Basics Plots sollten besprochen werden?
--   Barplot, Scatter, Boxplot, Density, Histogramm, Pie
-
+-   Barplot, Scatter, Boxplot, Density, Histogramm, Pie, Donought
+- Idee: Vorstellung der Plots aufteilen nach Art der Daten
+  - Numerisch (1 Variable), Numerisch (2 Variablen)
+  - Kategorisch (1 Variable)
+  
 ```{r}
 
 ggplot(
   data = exercise_data,
-  aes(x = V601)
+  aes(x = x = V601)
 ) + 
   geom_bar() # im advanced teil -> grouped, stacked barplots nach gruppierung, farbe, facets
 
@@ -59,6 +73,13 @@ ggplot(
   aes(x = V417)
 ) + 
   geom_histogram(bins = 200)
+
+
+ggplot(
+  data = exercise_data,
+  aes(x = V104, y = V279)
+) + 
+  geom_boxplot()
 
 ggplot(
   data = exercise_data,

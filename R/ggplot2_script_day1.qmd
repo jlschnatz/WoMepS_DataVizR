@@ -1,17 +1,13 @@
 ---
-title: "Workshop: ggplot2 (Tag 1)"
+title: "Workshop: ggplot2"
 title-block-style: default
-subtitle  : "Itemanalyse"
+subtitle  : "Tag 1"
 author    : "Arieja Farugie & Luca Schnatz"
 date: "`r Sys.Date()`"
-
-  
 code-overflow: wrap
 code-block-bg: true
 code-block-border-left: "#8800FF"
 smooth-scroll: true
-
-#theme: cosmo
 format: 
   html:
     self-contained: true
@@ -22,6 +18,7 @@ toc-title: "Inhalt"
 highlight-style: printing
 ---
 
+# Datensatz laden
 
 Zunächst laden wir den Datensatz:
 
@@ -30,90 +27,202 @@ Zunächst laden wir den Datensatz:
 library(tidyverse)
 library(here)
 
-exercise_data <- read_csv(here("data/exercise_data/exercise_data.csv"))
-
+exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
 glimpse(exercise_data)
 
-# colnames(exercise_data) <- c("id", "sex", "alter", "familienstand", "netto_einkommen", "einkommen_binned",
-#   "brutto_einkommen", "religion", "erwerb1", "erwerb2", "abschluss", "vollteilzeit",
-#   "angstellung", "staatsangehörigkeit", "ka1", "bundesland", "bundesland_neualt",
-#   "soziale_schicht", "ka2", paste0("ka", seq(3, 14))
-# )
+```
+
+# Basics von ggplot2
+
+-   wir werden die auf ganz einfacher Ebene die wichtigsten Arten von Plots kennenlernen
+-   anhand der verschiedenen Arten von Daten (numerisch, kategorisch)
+
+## 1 Variable (Numerisch)
+
+### Boxplot
+
+-   kurze Beschreibung eines Boxplots?
+-   wichtig, dass bei einer Variablen, die andere Achse keine Bedeutung besitzt
+
+```{r}
+ggplot(
+  data = exercise_data,
+  aes(y = psychological_distress)
+  ) +
+  geom_boxplot()
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_boxplot()
+
+```
+
+## Histogramm
+
+-   keep in mind: bins matter
+
+```{r}
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_histogram()
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_histogram(bins = 10)
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_histogram(bins = 40)
+
+```
+
+## Density-Plots
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_density()
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_density(bw = .5)
+
+ggplot(
+  data = exercise_data,
+  aes(x = psychological_distress)
+  ) +
+  geom_density(bw = 3)
+
+```
+
+## 1 Variable (Kategorisch)
+
+## Barplot
+
+-   Wann ist Barplot sinnvoll?
+-   Was stellt er in dem Beispiel dar?
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung)
+  ) + 
+  geom_bar(stat = "count")
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(y = subj_schichteinstufung)
+  ) + 
+  geom_bar(stat = "count")
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung,
+                y = after_stat(count/sum(count)))
+  ) + 
+  geom_bar()
+
+```
+
+## 2 Variablen (Numerisch, Numerisch)
+
+```{r}
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+  ) +
+  geom_point()  
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi,
+                color = geschlecht)
+) + 
+  geom_point()
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+                
+  ) + 
+  geom_point() + 
+  facet_grid(cols = vars(geschlecht)) 
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi,
+                color = geschlecht)
+) + 
+  geom_point() + 
+  facet_grid(cols = vars(geschlecht)) 
+```
+
+## 2 Variablen (Kategorisch, Kategorisch)
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung, fill = geschlecht)
+  ) + 
+  geom_bar(stat = "count", position = position_dodge(width = 1))
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung, fill = geschlecht)
+  ) + 
+  geom_bar(stat = "count", position = position_stack())
+
+```
+
+## 2 Variablen (Numerisch, Kategorisch)
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung,
+                y = psychological_distress)
+  ) + 
+  geom_boxplot()
+
+```
+
+## Mehr als zwei Variablen
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi,
+                color = geschlecht)
+) + 
+  geom_point(alpha = 0.7) + 
+  facet_grid(cols = vars(geschlecht)) 
 
 ```
 
 -   Welche Basics Plots sollten besprochen werden?
 -   Barplot, Scatter, Boxplot, Density, Histogramm, Pie, Donought
-- Idee: Vorstellung der Plots aufteilen nach Art der Daten
-  - Numerisch (1 Variable), Numerisch (2 Variablen)
-  - Kategorisch (1 Variable)
-  
-```{r}
-
-ggplot(
-  data = exercise_data,
-  aes(x = x = V601)
-) + 
-  geom_bar() # im advanced teil -> grouped, stacked barplots nach gruppierung, farbe, facets
-
-
-# auf die Probleme von Pie und Donought Chart eingehen 
-count(exercise_data, V601) %>%
-  drop_na() %>%
-  ggplot(
-    data = .,
-    aes(x = "",y = n, group = V601, fill = V601)
-    ) + 
-    geom_bar(stat="identity", width=1) +
-    coord_polar("y", start=0) # im advanced teil dann mit Text als Labels?
-
-
-ggplot(
-  data = exercise_data,
-  aes(x = V417)
-) + 
-  geom_histogram(bins = 200)
-
-
-ggplot(
-  data = exercise_data,
-  aes(x = V104, y = V279)
-) + 
-  geom_boxplot()
-
-ggplot(
-  data = exercise_data,
-  aes(x = V417)
-) + 
-  geom_density()
-
-ggplot(
-  data = exercise_data,
-  aes(x = V172)
-) + 
-  geom_bar()
-
-
-# für advanced teil -> manchmal besser lolipop chart statt bar-plot bei sehr vielen kategorien
-
-
-exercise_data %>%
-  count(V868) %>%
-  drop_na() %>%
-  ggplot(
-    data = .,
-    aes(y = fct_reorder(V868, n), x = n) 
-  ) + 
-  geom_bar(stat = "identity", width = 0.025, color = "black") +
-  geom_point(size = 3)
-
-
-exercise_data %>%
-  filter(V417 <= 20000 & V497 <= 20000) %>%
-  ggplot(
-    data = .,
-    aes(x = V497, y = V417)
-  ) + 
-  geom_point()
- 
-```
+-   Idee: Vorstellung der Plots aufteilen nach Art der Daten
+    -   Numerisch (1 Variable), Numerisch (2 Variablen)
+    -   Kategorisch (1 Variable)

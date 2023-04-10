@@ -67,11 +67,15 @@ cleaned_data <- exercise_data %>%
     ~ as.integer(6 - .x))
     ) %>%
   rowwise() %>%
-  mutate(psychological_distress = mean(c_across(starts_with("ps_")))) %>%
+  mutate(psychological_distress = sum(c_across(starts_with("ps_")))) %>%
   ungroup() %>%
-  mutate(across(c(nettoeinkommen_frei, aequivalenzeinkommen, bmi), ~as.numeric(as.character(.x))))
-
-
+  mutate(across(c(nettoeinkommen_frei, aequivalenzeinkommen, bmi), ~as.numeric(as.character(.x)))) %>%
+  mutate(subj_schichteinstufung = factor(subj_schichteinstufung, labels = c(
+    "unterschicht", "arbeiterschicht",
+    "mittelschicht", "oberemittelschicht",
+    "oberschicht", "keine der schichten")
+    ))
+  
 glimpse(cleaned_data)
 write_rds(x = cleaned_data, file = here("data/exercise_data/clean_exercise_data.rds"))
 

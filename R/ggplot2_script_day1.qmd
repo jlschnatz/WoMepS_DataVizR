@@ -59,7 +59,7 @@ ggplot(
 
 ```
 
-## Histogramm
+### Histogramm
 
 -   keep in mind: bins matter
 
@@ -84,7 +84,7 @@ ggplot(
 
 ```
 
-## Density-Plots
+### Density-Plot
 
 ```{r}
 
@@ -110,7 +110,7 @@ ggplot(
 
 ## 1 Variable (Kategorisch)
 
-## Barplot
+### Barplot
 
 -   Wann ist Barplot sinnvoll?
 -   Was stellt er in dem Beispiel dar?
@@ -136,6 +136,36 @@ ggplot(
   ) + 
   geom_bar()
 
+```
+
+### Kuchendiagramm (Pie-Chart)
+
+```{r}
+
+exercise_data %>%
+  count(konfession) %>%
+  drop_na(konfession) %>%
+  ggplot(
+    data = .,
+    mapping = aes(x = "", y = n, fill = konfession)
+  ) + 
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") 
+```
+
+### Donut-Diagramm
+
+```{r}
+exercise_data %>%
+  count(konfession) %>%
+  drop_na(konfession) %>%
+  ggplot(
+    data = .,
+    mapping = aes(x = 2, y = n, fill = konfession)
+  ) + 
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y", start = 200) +
+  xlim(0.5, 2.5) 
 ```
 
 ## 2 Variablen (Numerisch, Numerisch)

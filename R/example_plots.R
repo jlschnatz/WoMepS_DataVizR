@@ -176,9 +176,10 @@ exercise_data %>%
 exercise_data %>%
   ggplot(aes(x = geschlecht, y = psychological_distress, color = geschlecht)) + 
   stat_summary(fun.data  = mean_cl_normal, geom = "pointrange") +
-  facet_wrap(~ost_west) +
-  scale_color_manual(values = c("indianred3", "lightgoldenrod3")) +
-  theme_light()
+ # facet_wrap(~ost_west) +
+ # scale_color_manual(values = c("indianred3", "lightgoldenrod3")) +
+ # theme_light()
+  NULL
 
 exercise_data %>%
   filter(nettoeinkommen_frei <= 5000) %>%

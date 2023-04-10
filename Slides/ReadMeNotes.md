@@ -45,7 +45,7 @@ ggplot(DATA, aes(x=var1))+
   geom_boxplot()
 
 ggplot(DATA, aes(x=var1))+
-  geom_bar()s
+  geom_bar()
 ```
 
 -   Slide 17: Hier hat sich einiges geändert

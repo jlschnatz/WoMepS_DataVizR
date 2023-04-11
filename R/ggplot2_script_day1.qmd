@@ -43,6 +43,10 @@ glimpse(exercise_data)
 
 -   kurze Beschreibung eines Boxplots?
 -   wichtig, dass bei einer Variablen, die andere Achse keine Bedeutung besitzt
+-   grundsätzlich beginnt \*\*jede\*\* ggplot2-Abbildung mit \`ggplot() + ...\`
+-   in dem ggplot() Befehl können bereits die Datenstruktur spezifiziert werden, die in der Abbildung genutzt werden sollen
+-   Ebenfalls kann bereits die Aesthetics -\> welche Variablen in dem Datensatz zu bestimmten visuellen Properties/Cues (x, y, color, fill, shape) zugeordnet werden
+-   Boxplot als Geometry -\> wird definiert über `geom_boxplot()`
 
 ```{r}
 ggplot(
@@ -61,7 +65,9 @@ ggplot(
 
 ### Histogramm
 
--   keep in mind: bins matter
+-   über Geometry \`geom_histogram()\` definiert
+-   wichtig zu merken: Erscheinungsbild von Histogrammen kann durch Anzahl der bins verändert werden
+-   es sollte immer verschiedene bin-sizes / Anzahl ausprobiert werden (um dahinterliegende Datenstruktur nicht adäquat darzustellen)
 
 ```{r}
 ggplot(
@@ -85,6 +91,12 @@ ggplot(
 ```
 
 ### Density-Plot
+
+-   Geometry definiert über `geom_density()`\`
+
+-   bei geom_density ist die bandwith (bw) entscheidend für das Aussehen des Plots
+
+-   meistens ist die Vorgabe von ggplot2 schon gut -\> im Einzelfall sollten aber auch verschiedene Parameterwerte ausprobiert werden
 
 ```{r}
 
@@ -112,8 +124,10 @@ ggplot(
 
 ### Barplot
 
--   Wann ist Barplot sinnvoll?
+-   Wann ist Barplot sinnvoll? (bei kategorischen Variablen -\> Anzahl verschiedener Kategorien) -\> z.B. absolute oder relative Anzahl männlich, weiblich, diverser Teilnehmer in einer Stichprobe
 -   Was stellt er in dem Beispiel dar?
+-   darauf eingehen, was stat = "count" bedeutet -\> statistische Transformation der Daten wird durch ggplot2 vorgenommen
+-   darauf eingehen, wie relative Häufigkeiten im Barplot dargestellt werden können
 
 ```{r}
 
@@ -129,6 +143,7 @@ ggplot(
   ) + 
   geom_bar(stat = "count")
 
+# relative Häufigkeit
 ggplot(
   data = exercise_data,
   mapping = aes(x = subj_schichteinstufung,
@@ -139,6 +154,12 @@ ggplot(
 ```
 
 ### Kuchendiagramm (Pie-Chart)
+
+-   letztendlich nach ggplot ein abgewandelter Barplot -\> bei dem die Bars in einem polaren Koordinatensystem zugeordnet werden
+
+-   darauf eingehen, was theta = "y" bedeutet
+
+-   auf Caveats von Kuchendiagramm eingehen?
 
 ```{r}
 
@@ -155,6 +176,8 @@ exercise_data %>%
 
 ### Donut-Diagramm
 
+-   weglassen?
+
 ```{r}
 exercise_data %>%
   count(konfession) %>%
@@ -170,6 +193,12 @@ exercise_data %>%
 
 ## 2 Variablen (Numerisch, Numerisch)
 
+### Scatterplot
+
+-   jetzt wird nicht nur eine Variable dem Koordinatensystem zugeordnet (x oder y), sondern sowohl x und y -\> zwei numerische Variablen
+
+-   Geometry des Scatter-Plot definiert über \`geom_point()\`
+
 ```{r}
 ggplot(
   data = exercise_data,
@@ -178,31 +207,7 @@ ggplot(
   ) +
   geom_point()  
 
-ggplot(
-  data = exercise_data,
-  mapping = aes(x = alter,
-                y = bmi,
-                color = geschlecht)
-) + 
-  geom_point()
 
-ggplot(
-  data = exercise_data,
-  mapping = aes(x = alter,
-                y = bmi)
-                
-  ) + 
-  geom_point() + 
-  facet_grid(cols = vars(geschlecht)) 
-
-ggplot(
-  data = exercise_data,
-  mapping = aes(x = alter,
-                y = bmi,
-                color = geschlecht)
-) + 
-  geom_point() + 
-  facet_grid(cols = vars(geschlecht)) 
 ```
 
 ## 2 Variablen (Kategorisch, Kategorisch)
@@ -246,13 +251,25 @@ ggplot(
                 y = bmi,
                 color = geschlecht)
 ) + 
-  geom_point(alpha = 0.7) + 
+  geom_point()
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+                
+  ) + 
+  geom_point() + 
   facet_grid(cols = vars(geschlecht)) 
 
-```
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi,
+                color = geschlecht)
+) + 
+  geom_point() + 
+  facet_grid(cols = vars(geschlecht)) 
 
--   Welche Basics Plots sollten besprochen werden?
--   Barplot, Scatter, Boxplot, Density, Histogramm, Pie, Donought
--   Idee: Vorstellung der Plots aufteilen nach Art der Daten
-    -   Numerisch (1 Variable), Numerisch (2 Variablen)
-    -   Kategorisch (1 Variable)
+
+```

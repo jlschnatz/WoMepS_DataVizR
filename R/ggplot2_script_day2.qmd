@@ -1,0 +1,133 @@
+---
+title: "Workshop: ggplot2"
+title-block-style: default
+subtitle  : "Tag 1"
+author    : "Arieja Farugie & Luca Schnatz"
+date: "`r Sys.Date()`"
+code-overflow: wrap
+code-block-bg: true
+code-block-border-left: "#8800FF"
+smooth-scroll: true
+format: 
+  html:
+    self-contained: true
+toc: true
+touch: true
+theme: lux
+toc-title: "Inhalt"
+highlight-style: printing
+---
+
+-   
+
+-   Patchwork
+
+-   Scales (scale_x\_..., xlab, xlim, ...)
+
+-   Themes
+
+-   Text annotation (annotate, geom_text, geom_label)
+
+# Scales
+
+# Patchwork
+
+```{r}
+# install.packages("patchwork")
+library(patchwork)
+library(tidyverse)
+library(here)
+
+exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
+glimpse(exercise_data)
+
+```
+
+## Basic-Plots erstellen
+
+```{r}
+
+p1 <- ggplot(
+  data = exercise_data,
+  mapping = aes(x = bmi)
+  ) + 
+  geom_histogram(bins = 50, fill = "lightgrey", color = "white") + 
+  theme_light()
+
+print(p1)
+
+p2 <- ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter, y = bmi, color = geschlecht)
+) + 
+  geom_point(alpha = 0.2) + 
+  geom_smooth(method = "lm", fullwidth = TRUE, color = "black") + 
+  facet_wrap(~geschlecht) +
+  ggsci::scale_color_npg() +
+  theme_light()
+
+print(p2)
+
+p3 <- ggplot(
+  data = exercise_data,
+  mapping = aes(x = geschlecht, y = bmi, color = geschlecht)
+) + 
+  geom_jitter(width = 0.1, alpha = 0.2) +
+  stat_summary(
+    fun = mean,
+    geom = "pointrange",
+    fun.min = function(x) mean(x) - sd(x),
+    fun.max = function(x) mean(x) + sd(x),
+    color = "black"
+  ) + 
+  ggsci::scale_color_npg() +
+  theme_light()
+
+print(p3)
+
+p4 <- ggplot(
+  data = exercise_data,
+  aes(x = alter, fill = geschlecht)
+  ) +
+  geom_density(alpha = 0.5) +
+  ggsci::scale_fill_npg() +
+  theme_light()
+
+print(p4)
+
+```
+
+## Basic Patchwork-Syntax
+
+-   `p1 + p2` um zwei Plots in horizontaler Ebene nebeneinander darzustellen (äquivalent: `p1 | p2`)
+-   `p1 / p2` um zwei Plots in der vertikalen Ebene unter/übereinander darzustellen
+
+```{r}
+p1 + p2 # oder p1 | p2
+p1 / p2
+
+```
+
+- beliebige Kombination aus `+` bzw. `|` und `/`
+- durch Klammerschreibweise können "komplexere" Kombinationen gebildet werden
+```{r}
+(p1 + p3) / p2
+```
+
+- gemeinsame Legende:
+```{r}
+(p1 | p3) / p2 
+(p1 | p3) / p2 + plot_layout(guides = "collect")
+```
+
+- Kontrolle der Breite und höhe der einzelnen Teilplots:
+
+```{r}
+
+(p1 | p3) + plot_layout(widths  = c(3, 2))
+(p3 / p4) + plot_layout(heights = c(1, 2))
+
+(p1 + p3) / (p2 + p4) + plot_layout(widths = c(1, 2), heights = c(1, 3))
+
+```
+

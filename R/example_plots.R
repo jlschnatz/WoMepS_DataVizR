@@ -195,3 +195,23 @@ ggplot(
   theme_light()
 
 
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = bmi, y = psychological_distress, 
+                color = geschlecht)
+) + 
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "lm", alpha = 0.1, fullrange = TRUE)  +
+  facet_wrap(~geschlecht) + 
+  theme_minimal()
+
+
+
+exercise_data %>%
+  sample_n(size = 1000) %>%
+  lm(
+    data = .,
+    formula = psychological_distress ~ bmi + geschlecht
+  ) %>%
+  summary()
+

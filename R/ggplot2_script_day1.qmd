@@ -212,6 +212,8 @@ ggplot(
 
 ## 2 Variablen (Kategorisch, Kategorisch)
 
+-   erklären, dass man auch "dodge" benutzen kann
+
 ```{r}
 
 ggplot(

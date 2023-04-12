@@ -79,12 +79,26 @@ cleaned_data <- exercise_data %>%
 glimpse(cleaned_data)
 write_rds(x = cleaned_data, file = here("data/exercise_data/clean_exercise_data.rds"))
 
+# new metadatafile:
+
+metadata_out <- metadata %>%
+  mutate(var_id = new_varnames, .before = everything()) %>%
+  mutate(var_name = str_to_title(var_name)) %>%
+  mutate(value_labels = str_to_lower(value_labels))
+
+
+library(flextable)
+
+cleaned_data %>%
+  select(where(is.factor)) %>%
+  summ
 
 
 
-
-
-  
-  
-
+metadata_out %>%
+  rename_with(~c("Variable", "Definition", "Datentyp", "Labels")) %>%
+  flextable() %>%
+  autofit() %>%
+  theme_apa() %>%
+  save_as_docx(path = here("data/exercise_data/codebook_updated.docx"))
 

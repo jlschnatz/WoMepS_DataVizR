@@ -20,7 +20,7 @@ highlight-style: printing
 
 # Datensatz laden
 
-Zunächst laden wir den Datensatz:
+Zunächst laden wir den Datensatz. Dieser ist als *.rds* Datei abgespeichert (eine R-spezifisches Datenformat), weswegen wir ihn mit dem Befehl `read_rds()` des readr-Packages in R einladen können. Mit `glimpse()` können wir einen Überblick über die verschiedenen Variablen erhalten.
 
 ```{r}
 #| message: false
@@ -32,21 +32,38 @@ glimpse(exercise_data)
 
 ```
 
-# Basics von ggplot2
+# Basics Plots in ggplot2
 
--   wir werden die auf ganz einfacher Ebene die wichtigsten Arten von Plots kennenlernen
--   anhand der verschiedenen Arten von Daten (numerisch, kategorisch)
+An Tag 1 des Workshops geht es vor allem darum, dass Sie die wichtigsten "Basic"-Plots in ggplot2 kennenlernen und in nachfolgenden Aufgaben anwenden und ausprobieren. Das Skript ist dabei nach den verschiedenen Datentypen (kategorisch, numerisch, und die Kombinationen aus beiden) strukturiert, da es für jeden Datentyp spezifische Plots gibt, die üblicherweise verwendet werden und die Daten am besten repräsentieren.
+
+Jede ggplot2-Abbildung fängt dabei **immer** mit dem gleichen leicht zu merkenden Befehl an: `ggplot()`. In diese Befehl können wir bereits die Daten spezifizieren, die wir visualisieren wollen und die Aesthetics definieren. Diese repräsentieren die Zuordnung von Variablen aus dem Datensatz zu verschiedenen visuellen Eigenschaften des Plots (z.B. x, y, color, fill, shape, size, etc.).
+
+```{r}
+ggplot(
+  data = exercise_data,
+ #mapping = aes(...)
+) 
+```
+
+Wie Sie sehen erscheint zunächst einfach ein graues Panel, denn wir haben ja noch keine Geometries und Aesthetics definiert haben.
+
+```{r}
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter)
+  ) 
+```
+
+Durch das Zuordnung der x-Achse zu der Variable *alter* im Datensatz, erscheint nun in unserem Plot ebenfalls die Variable auf der x-Achse. Aestethics werden dabei immer über den Befehlt `mapping = aes(...)` definiert. Da aber noch keine Geometries festgelegt sind, werden die Daten noch nicht im Plot visualisiert.
 
 ## 1 Variable (Numerisch)
 
+Wir beginnen mit einer numerische Variable (z.B. Psychologischer Distress, Alter, Body-Mass-Index).
+
 ### Boxplot
 
--   kurze Beschreibung eines Boxplots?
--   wichtig, dass bei einer Variablen, die andere Achse keine Bedeutung besitzt
--   grundsätzlich beginnt \*\*jede\*\* ggplot2-Abbildung mit \`ggplot() + ...\`
--   in dem ggplot() Befehl können bereits die Datenstruktur spezifiziert werden, die in der Abbildung genutzt werden sollen
--   Ebenfalls kann bereits die Aesthetics -\> welche Variablen in dem Datensatz zu bestimmten visuellen Properties/Cues (x, y, color, fill, shape) zugeordnet werden
--   Boxplot als Geometry -\> wird definiert über `geom_boxplot()`
+Der Boxplot ist eine recht übersichtliche Art der Darstellung von Verteilungen (für mindestens ordinalskalierte Variablen). Als praktisches Beispiel wollen wir uns anschauen wie die Variable psychologischer Distress in den Daten verteilt ist. Wie bereits können wir bereits in den ggplot()-Befehl den Datensatz und die Aestethics definieren. Wenn wir einen vertikalen Boxplot benutzen wollen, müssen wir dabei in den Aesthetics `aes(y = psychological_distress)` eingeben, da wir die y-Achse der Variable psychologischer Distress zuordnen. Danach können wir über den Befehl `geom_boxplot()` den Boxplot erstellen.
 
 ```{r}
 ggplot(
@@ -65,9 +82,8 @@ ggplot(
 
 ### Histogramm
 
--   über Geometry \`geom_histogram()\` definiert
--   wichtig zu merken: Erscheinungsbild von Histogrammen kann durch Anzahl der bins verändert werden
--   es sollte immer verschiedene bin-sizes / Anzahl ausprobiert werden (um dahinterliegende Datenstruktur nicht adäquat darzustellen)
+Ein Histogramm können wir ganz analog zu dem Boxplot definieren, indem wir einfach den Befehl geom_boxplot() austauschen mit dem Befehl `geom_histogram()`. Wichtig zu beachtet bei Histogrammen ist, dass Anzahl der Kategorien (bins) eine Auswirkung auf die Optik des Plots hat. Es lohnt sich also verschiedene Bingrößen bzw. Anzahl an Bins auszuprobieren und die Anzahl zu wählen, die die Daten am besten repräsentiert. Wir können die Anzahl an Bins mit dem Argument `bins = ...` spezifizieren und die Bingröße über das Argument `binwidth = ...`.
+
 
 ```{r}
 ggplot(
@@ -92,11 +108,8 @@ ggplot(
 
 ### Density-Plot
 
--   Geometry definiert über `geom_density()`\`
+Eine weitere Methode, um die Verteilung einer numerischen Variable zu visualisieren, ist der Density-Plot. Dabei wird in einem Density-Plot eine Kernel-Dichte-Schätzung verwendet, um die Wahrscheinlichkeitsdichtefunktion der Variablen darzustellen. In ggplot2 können wir sehr einfach einen Density-Plot mit die Funktion `geom_density()` definieren. Sie sehen, dass die Geometries (also die Spezifikation, welcher Art des Plots verwendet werden soll) in ggplot2 alle mit *geom_...* beginnen. So sind sie recht einfach einzuprägen. Bei Density-Plots können wir mit dem Argument `bw = ...` die Bandwith definieren, wie sehr sich der Plot an unserer Daten anpassen soll (wie genau die Dichte der Verteilung entsprechen soll). Ggplot2 wählt hier meistens schon gute Default-Werte, probieren Sie aber im Zweifel trotzdem verschiedene Werte aus, um zu schauen wie sich der Plot verändert.
 
--   bei geom_density ist die bandwith (bw) entscheidend für das Aussehen des Plots
-
--   meistens ist die Vorgabe von ggplot2 schon gut -\> im Einzelfall sollten aber auch verschiedene Parameterwerte ausprobiert werden
 
 ```{r}
 
@@ -110,7 +123,7 @@ ggplot(
   data = exercise_data,
   aes(x = psychological_distress)
   ) +
-  geom_density(bw = .5)
+  geom_density(bw = .4)
 
 ggplot(
   data = exercise_data,
@@ -122,12 +135,12 @@ ggplot(
 
 ## 1 Variable (Kategorisch)
 
+Als nächsten gehen über zu Visualisierungen für eine kategorische Variable (z.B. Geschlecht, Bundesland, etc.). Hier bieten sich vor allem drei verschiedene Plots an: Häufigkeitdiagramme (Barplots) und Kuchendiagramme (Pie-Charts).
+
 ### Barplot
 
--   Wann ist Barplot sinnvoll? (bei kategorischen Variablen -\> Anzahl verschiedener Kategorien) -\> z.B. absolute oder relative Anzahl männlich, weiblich, diverser Teilnehmer in einer Stichprobe
--   Was stellt er in dem Beispiel dar?
--   darauf eingehen, was stat = "count" bedeutet -\> statistische Transformation der Daten wird durch ggplot2 vorgenommen
--   darauf eingehen, wie relative Häufigkeiten im Barplot dargestellt werden können
+Die Verwendung von Barplots ist insbesondere dann sinnvoll, wenn wir die Häufigkeit (absolut oder relativ) einer kategorischen Variable darstellen wollen. Wir müssen dafür nur in den Aethetics die kategorische Variable entwender der x oder y-Achse zuordnen (mapping = aes(x/y = ...)). Danach können wir mit dem Befehl `geom_bar()` den Barplot definieren. Das Argument `stat = "count"` ist dabei der Default, müsste also theoretisch nicht spezifiziert werden. Es macht allerdings den Code expliziter und dadurch verständlicher. Wenn wir statt absoluter Häufigkeiten relative Häufigkeiten darstellen wollen, müssen wir dies in den Aesthetics bereits definieren. Die Schreibweise `y = after_stat(count/sum(count))` ist dabei folgendermaßen zu lesen: Auf der y-Achse soll die Anzahl einer Kategorie durch die Summe aus der Anzahl aller Kategorien geteilt werden (relative Häufigkeit).
+
 
 ```{r}
 
@@ -155,51 +168,36 @@ ggplot(
 
 ### Kuchendiagramm (Pie-Chart)
 
--   letztendlich nach ggplot ein abgewandelter Barplot -\> bei dem die Bars in einem polaren Koordinatensystem zugeordnet werden
 
--   darauf eingehen, was theta = "y" bedeutet
+Ein Kuchendiagramm ist in ggplot2 letzendlich nur ein abgewandelter Barplot, bei dem die Säulen des Plots einem polaren Koordinatensystem zugeordnet werden. Bevor wir das Kuchendiagram visualisieren können, müssen wir in diesem Fall die Häufigkeiten der Kategorien (z.B. der Konfession) schon im Vorhhinein berechen. Dies geht sehr leicht mit der Funktion `count()` aus dem dplyr-Package. Danach können wir die Häufigkeit der Kategorien (die Variable *n*) der y-Achse in den Aesthetics zuordnen. Mit der Aestethic `fill = konfession` wird die Variable in unserem Datensatz über die Farbe im Plot dargestellt. Mittels `coord_polar(theta = "y")` wird das kartesische Koordinatensystem in ein polares Koordinatensystem umgewandelt, um das Kuchendiagram zu erstellen.
 
--   auf Caveats von Kuchendiagramm eingehen?
 
 ```{r}
 
 exercise_data %>%
-  count(konfession) %>%
-  drop_na(konfession) %>%
+  count(konfession) %>% # Bestimmung der Häufigkeiten der Konfession
+  drop_na(konfession) %>% # NAs rausschmeißen
   ggplot(
     data = .,
-    mapping = aes(x = "", y = n, fill = konfession)
+    mapping = aes(x = "", 
+                  y = n, # Häufigkeit
+                  fill = konfession) # Kategorie
   ) + 
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity") + # "identity" statt "count"
   coord_polar(theta = "y") 
 ```
 
-### Donut-Diagramm
-
--   weglassen?
-
-```{r}
-exercise_data %>%
-  count(konfession) %>%
-  drop_na(konfession) %>%
-  ggplot(
-    data = .,
-    mapping = aes(x = 2, y = n, fill = konfession)
-  ) + 
-  geom_bar(stat = "identity") +
-  coord_polar(theta = "y", start = 200) +
-  xlim(0.5, 2.5) 
-```
 
 ## 2 Variablen (Numerisch, Numerisch)
 
+Nachdem Sie einige Plots für die Visualisierung für nur eine Variable (numerisch oder kategorisch) kennengelernt haben, wollen wir uns als nächstes der Visualisierung von zwei Variablen widmen. Wir starten dabei mit der Visualisierung zwei numerischer Variablen. 
+
 ### Scatterplot
 
--   jetzt wird nicht nur eine Variable dem Koordinatensystem zugeordnet (x oder y), sondern sowohl x und y -\> zwei numerische Variablen
-
--   Geometry des Scatter-Plot definiert über \`geom_point()\`
+Der klassische Plot, um zwei numerische Variablen zu visualisieren, ist der Scatterplot oder auch Streudiagramm. Die Geometry, die Sie dafür benötigen ist `geom_point()`. Wir definieren einfach die beiden Variablen, die wir visualisieren wollen in den Aestethics über `aes(x = ..., y = ...)`. 
 
 ```{r}
+
 ggplot(
   data = exercise_data,
   mapping = aes(x = alter,
@@ -208,14 +206,40 @@ ggplot(
   geom_point()  
 
 
+# Anpassungsmöglichkeiten 
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+  ) +
+  geom_point(alpha = 0.3) # Durchsichtigkeit der Punkte (von alpha = 0-1)
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+  ) +
+  geom_point(size = 0.5) # Größe der Punkte
+
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = alter,
+                y = bmi)
+  ) +
+  geom_point(color = "darkblue") # Farbe der Punkte
+
 ```
 
 ## 2 Variablen (Kategorisch, Kategorisch)
 
--   erklären, dass man auch "dodge" benutzen kann
+Um zwei kategorische Variablen zu visualisieren, bietet sich ebenfalls ein Barplot an. Wir ordnen dabei die eine kategorische Variable eine Achse des Koordinatensystems zu (x oder y) und ordnen die andere Variable der Aesthetic *fill* oder *color* zu. Dabei gibt es verschiedenen Möglichkeiten, wie die Säulen visualisiert werden. Entweder können diese nebeneinander stehen (`position = position_dodge(width = 1)`) oder aufeinander stehen (`position = position_stack()`). 
+
+Alternativ zu einer Farbzuordnung können Sie auch zwei kategorische Variablen visualisieren, indem Sie mehrere Panels verwenden. Dies kann vor allem bei sehr unübersichtlichen Plots mit vielen Kategorien sinnvoll sein. Mehrere Panels/Facets können Sie definieren über die Funktion `facet_wrap()` (oder `facet_grid()`, die hier nicht näher spezifiziert wird). Sie müssen dabei in diesen Funktionen angeben, auf Basis welcher Variable mehrere Panels erstellt werden sollen. Sie können dafür entweder die Schreibweise `facets = ~geschlecht` oder `facets = vars(geschlecht)` verwenden
 
 ```{r}
 
+# Zweite Variable mittels Farbzuordnung
 ggplot(
   data = exercise_data,
   mapping = aes(x = subj_schichteinstufung, fill = geschlecht)
@@ -228,9 +252,30 @@ ggplot(
   ) + 
   geom_bar(stat = "count", position = position_stack())
 
+
+# Definition von verschiedenen Panels statt Farbzuordnung
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung)
+  ) + 
+  geom_bar(stat = "count", position = position_dodge(width = 1)) + 
+  facet_wrap(facets = ~geschlecht) # mehrere Panels
+
+
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = geschlecht)
+  ) + 
+  geom_bar(stat = "count", position = position_dodge(width = 1)) + 
+  facet_wrap(facets = ~subj_schichteinstufung) # Alternativ Schreibweise: facets = vars(subj_schichteinstufung)
+
 ```
 
 ## 2 Variablen (Numerisch, Kategorisch)
+
+Für eine Visualisierung mit einer numerischen und einer kategorischen Variable können Sie auf die Plots, die Sie schon zum Teil Visualisierung mit einer numerischen Variable zurückgreifen. Für das Beispiel des Boxplots ordnen Sie einfach zusätzlich in den Aesthetics die kategorische Variable entweder x oder y zu. Wenn Sie einen Density-Plot verwenden wollen, können sie die Aesthetics *fill* oder *color* der kategorischen Variable zuordnen.
 
 ```{r}
 
@@ -241,9 +286,30 @@ ggplot(
   ) + 
   geom_boxplot()
 
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = psychological_distress,
+                fill = subj_schichteinstufung)
+  ) + 
+  geom_density(alpha = 0.5)
+
+
+# Exkurs
+library(ggridges)
+ggplot(data = exercise_data,
+       mapping = aes(x = psychological_distress,
+                     y = subj_schichteinstufung,
+                     fill = subj_schichteinstufung)) + 
+  geom_density_ridges()
+
+# für mehr Infos s.h.: https://wilkelab.org/ggridges/
+
 ```
 
 ## Mehr als zwei Variablen
+
+Für mehr können Sie bisher vorgestellten Konzepte gemeinsam kombinieren. x, y, color, fill, shape können verschiedenen Variablen zugeordnet werden. Ebenfalls können Sie die vorher vorgestellten Multipanel-Funktion nutzen (facet_wrap oder facet_grid).
 
 ```{r}
 
@@ -251,7 +317,8 @@ ggplot(
   data = exercise_data,
   mapping = aes(x = alter,
                 y = bmi,
-                color = geschlecht)
+                color = geschlecht,
+                shape = geschlecht)
 ) + 
   geom_point()
 
@@ -275,3 +342,22 @@ ggplot(
 
 
 ```
+
+```{r}
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung,
+                y = psychological_distress,
+                fill = geschlecht)
+  ) + 
+  geom_boxplot()
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(x = subj_schichteinstufung,
+                y = psychological_distress)
+  ) + 
+  geom_boxplot() + 
+  facet_wrap(~geschlecht)
+```
+

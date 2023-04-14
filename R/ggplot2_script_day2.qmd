@@ -1,10 +1,10 @@
 ---
 title: "Workshop: ggplot2"
-title-block-style: default
-subtitle  : "Tag 1"
+title-block-style: "default"
+subtitle  : "Tag 2"
 author    : "Arieja Farugie & Luca Schnatz"
 date: "`r Sys.Date()`"
-code-overflow: wrap
+code-overflow: "wrap"
 code-block-bg: true
 code-block-border-left: "#8800FF"
 smooth-scroll: true
@@ -13,22 +13,279 @@ format:
     self-contained: true
 toc: true
 touch: true
-theme: lux
+theme: "lux"
 toc-title: "Inhalt"
-highlight-style: printing
+highlight-style: "printing"
+institute: "Institut für Psychologie"
+code-copy: true
+code-link: true
 ---
 
--   Patchwork
--   Scales (scale_x\_..., xlab, xlim, ...)
--   Themes
+```{r}
+#| message: false
+library(tidyverse)
+library(here)
 
--   Text annotation (annotate, geom_text, geom_label)
+exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
+
+```
+
 
 # Scales
 
-# Text Annotationen
+```{r}
+# Erstellen eines Ridgeline-Plots
+library(ggridges)
+p0 <- exercise_data %>%
+  drop_na(lebenszufriedenheit, subj_schichteinstufung) %>%
+  ggplot(
+  data = .,
+  mapping = aes(x = psychological_distress,
+                y = subj_schichteinstufung,
+                fill = geschlecht)
+  ) + 
+  geom_density_ridges(scale = 0.8, 
+                      alpha = 0.8,
+                      rel_min_height = 0.001,
+                      color = NA)
+
+print(p0)
+```
+
+## Achsenbeschriftungen
+### Möglichkeit I
+
+Über Funktionen der Familie `scale_*aesthetic*_*specification*`. Was kann über diesen Familienstamm verändert werden?
+
+- Achsentitel
+- Achsenbreaks
+- Achsenlimits
+- Achsenbeschriftung
+- Achsenpadding
+- (und noch vieles mehr: alpha, color, fill, shape, linesize, size, etc.)
+
+```{r}
+
+
+p0 +
+  scale_x_continuous( # kontinuierliche x-Achse
+    name = "Psychologischer Distress", # Titel der x-Achse
+    limits = c(10, 60), # Achsenlimits
+    breaks = seq(0, 60, 10), # Achsenabschnitte
+    expand = c(0.01, 0) # Padding 
+  )
+
+p0 +
+  scale_y_discrete( # diskrete y-Achse
+    name = "Subjektive Schichteinstufung", # Titel der y-Achse
+    labels = str_to_title, # Verändung der Labels
+    expand = c(0.05, 0.05) # Padding 
+  )
+
+# Alternative:
+p0 +
+  scale_y_discrete( # diskrete y-Achse
+    name = "Subjektive Schichteinstufung", # Titel der y-Achse
+    labels = letters[1:6], # Vektorinput!
+    expand = c(0.05, 0.05) # Padding 
+  )
+
+```
+
+### Möglichkeit II
+
+Über die *lim* und *lab*-Familie:
+
+```{r}
+
+p0 + 
+  xlim(10, 60) + 
+  xlab("Psychologischer Distress") + 
+  ylab("Subjektive Schichteinstufung")
+
+p0 + 
+  labs(x = "Psychologischer Distress",
+       y = "Subjektive Schichteinstufung",
+       title = "Mein tolle Abbildung",
+       subtitle = "Das in ein Untertitel",
+       tag = "A",
+       caption = "Das ist eine Beschreibung")
+
+```
+
+## Titel
+
+```{r}
+p0 + ggtitle(label = "Mein Titel", subtitle = "Mein Subtitel")
+p0 + labs(title = "Mein Titel", subtitle = "Mein Subtitel")
+```
+
+
+## Colors
+
+Wenn wir in den Aesthetics Variablen aus dem Datensatz Parametern wie fill oder color zuordnen, können wir ebenfalls innerhalb der Familie *scale_aethetic_specification* die Farben ändern. Unterscheidung zwischen:
+
+- scale_fill_...(discrete, continuous, manual, binned, gradient, binned, brewer)
+- scale_color_...(discrete, continuous, manual, binned, gradient, binned, brewer)
+
+Es gibt außerdem zahlreiche externe Packages, die gute Farbpaletten für sowohl qualitative und kontinuierliche Daten bereitstellen. Beispiele:
+
+- wesanderson
+- jcolors
+- scico
+- viridis
+- RColorBrewer
+- ...
+
+```{r}
+
+library(ggsci)
+p0 +  scale_fill_manual(values = c("#3C307E", "#95CBE3"))
+p0 + scale_fill_brewer(palette = "Set1")
+p0 + ggsci::scale_fill_simpsons()
+
+
+jcolors::display_all_jcolors()
+scico::scico_palette_show()
+RColorBrewer::display.brewer.all()
+
+```
+
+Kontinuierliche Farbpaletten:
+
+```{r}
+
+p_cor <- exercise_data %>%
+  select(starts_with("ps_")) %>%
+  cor(use = "complete.obs") %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "var1") %>%
+  pivot_longer(
+    cols = -var1, 
+    names_to = "var2",
+    values_to = "pearson_cor") %>%
+  mutate(across(var1:var2, ~str_extract(.x, "ps_[0-9]{2}"))) %>%
+  ggplot(
+    data = .,
+    mapping = aes(x = var1, y = var2, fill = pearson_cor)
+  ) + 
+  geom_raster(alpha = 1)
+
+print(p_cor)
+
+p_cor + scale_fill_viridis_c(option = "C") # mit option = "A-E" andere Palette
+p_cor + scico::scale_fill_scico(palette = "lajolla")
+p_cor + scale_fill_gradient2(low = "red", high = "blue", mid = "white", midpoint = 0)
+
+```
+
 
 # Themes
+## Vorgefertigte Themes
+
+Es gibt verschiedene Theme-Settings, die bereits in ggplot2 als fertige Funktionen implementiert sind:
+
+```{r}
+
+print(p0)
+p0 + theme_classic()
+p0 + theme_dark()
+p0 + theme_light()
+p0 + theme_linedraw()
+p0 + theme_minimal()
+p0 + theme_void()
+
+library(ggthemes)
+
+# Standard:
+p0 + theme_gray()
+
+```
+
+## Individuelle Anpassung
+
+[Wortstämme in den Argumenten der theme()-Funktion](https://ggplot2.tidyverse.org/reference/theme.html):
+
+- **axis.**placeholder (title, text, ticks, line)
+- **legend.**placeholder (title, text, background, direction, position, box, key, justification)
+- **panel.**placeholder (background, border, grid)
+- **plot.**placeholder (background, title, subtitle, caption, tag, margin)
+- **strip.**placeholder (background, text, clip, placement, switch)
+
+[Theme-Elements](https://ggplot2.tidyverse.org/reference/element.html):
+
+- `element_text()`: alle theme-Funktionen, die text verändern
+- `element_rect()`: alle theme-Funktionen, die Rechtecke verändern
+- `element_line()`: alle theme-Funktionen, die Linien verändern
+- `element_blank()`: zeichnet nichts und weist keinen Platz zu.
+
+```{r}
+# Beispiel: Wie entferne ich per Hand den grauen Hintergrund und füge  Achsenlinien hinzu? 
+
+p_axis <- p0 + theme(
+  panel.background = element_rect(fill = NA),
+  axis.line = element_line(color = "darkgrey", linewidth = 0.25),
+  axis.ticks = element_line(color = "darkgrey", linewidth = 0.25),
+)
+
+print(p_axis)
+
+
+# Beispiel: Wie passe ich die Legende an?
+
+p_axis + theme(
+  legend.position = "bottom",
+  legend.title = element_text(face = "bold", size = 10),
+  legend.direction = "horizontal",
+  legend.key.height = unit(0.5, "cm"),
+  legend.key.width = unit(0.5, "cm"),
+  legend.text = element_text(size = 9)
+
+)
+
+```
+
+Alles in Kombination:
+
+```{r}
+library(sysfonts)
+library(showtext)
+font_add_google("Source Sans Pro", "ssp")
+showtext_auto()
+
+p0 + 
+  scale_x_continuous(
+    name = "Psychologischer Distress",
+    limits = c(10, 60),
+    breaks = seq(10, 60, 10),
+    expand = c(0.04, 0.04)
+  ) + 
+  scale_y_discrete(
+    name = "Subjektive Schichteinstufung",
+    labels = str_to_title
+  ) + 
+  jcolors::scale_fill_jcolors(
+    name = "Geschlecht",
+    labels = c("Männlich", "Weiblich"),
+    palette = "pal7"
+    ) +
+  theme(
+    text = element_text(family = "ssp"),
+    panel.background = element_rect(fill = NA),
+    axis.line = element_line(color = "darkgrey", linewidth = 0.25),
+    axis.ticks = element_line(color = "darkgrey", linewidth = 0.25),
+    axis.ticks.length = unit(1, "mm"),
+    axis.text.x = element_text(margin = margin(t = 5)),
+    axis.text.y = element_text(margin = margin(r = 5)),
+    axis.title = element_text(size = 11, face = "bold"),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    legend.position = c(0.92, 0.5),
+    legend.title = element_text(face = "bold")
+  )
+  
+```
+
 
 # Patchwork
 
@@ -97,13 +354,14 @@ print(p4)
 
 ```
 
-## Basic Patchwork-Syntax
+## Patchwork-Syntax
 
 -   `p1 + p2` um zwei Plots in horizontaler Ebene nebeneinander darzustellen (äquivalent: `p1 | p2`)
 -   `p1 / p2` um zwei Plots in der vertikalen Ebene unter/übereinander darzustellen
 
 ```{r}
 p1 + p2 # oder p1 | p2
+
 p1 / p2
 
 ```
@@ -112,7 +370,9 @@ p1 / p2
 - durch Klammerschreibweise können "komplexere" Kombinationen gebildet werden
 
 ```{r}
+
 (p1 + p3) / p2
+
 ```
 
 - gemeinsame Legende:
@@ -125,10 +385,14 @@ p1 / p2
 
 ```{r}
 
-(p1 | p3) + plot_layout(widths  = c(3, 2))
+(p1 | p3) + plot_layout(widths  = c(2, 3))
 (p3 / p4) + plot_layout(heights = c(1, 2))
 
 (p1 + p3) / (p2 + p4) + plot_layout(widths = c(1, 2), heights = c(1, 3))
+
+p1 + p2 + plot_annotation()
+
+
 
 ```
 

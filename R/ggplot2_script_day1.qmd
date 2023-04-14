@@ -1,6 +1,6 @@
 ---
 title: "Workshop: ggplot2"
-title-block-style: default
+title-block-style: "default"
 subtitle  : "Tag 1"
 author    : "Arieja Farugie & Luca Schnatz"
 date: "`r Sys.Date()`"
@@ -13,9 +13,12 @@ format:
     self-contained: true
 toc: true
 touch: true
-theme: lux
+theme: "lux"
 toc-title: "Inhalt"
-highlight-style: printing
+highlight-style: "printing"
+institute: "Institut für Psychologie"
+code-copy: true
+code-link: true
 ---
 
 # Datensatz laden
@@ -44,6 +47,7 @@ ggplot(
   data = exercise_data,
  #mapping = aes(...)
 ) 
+
 ```
 
 Wie Sie sehen, erscheint zunächst einfach ein graues Panel, denn wir haben ja noch keine Geometries und Aesthetics definiert.
@@ -52,7 +56,7 @@ Wie Sie sehen, erscheint zunächst einfach ein graues Panel, denn wir haben ja n
 
 ggplot(
   data = exercise_data,
-  mapping = aes(x = alter)
+  mapping = aes(y = alter)
   ) 
 
 ```
@@ -89,6 +93,12 @@ Ein Histogramm können wir ganz analog zu dem Boxplot definieren, indem wir einf
 
 
 ```{r}
+
+exercise_data %>%
+  drop_na(psychological_distress) %>%
+  ggplot(aes(x = psychological_distress)) + 
+  geom_histogram()
+
 ggplot(
   data = exercise_data,
   aes(x = psychological_distress)
@@ -105,7 +115,7 @@ ggplot(
   data = exercise_data,
   aes(x = psychological_distress)
   ) +
-  geom_histogram(bins = 40)
+  geom_histogram()
 
 ```
 
@@ -115,6 +125,7 @@ Eine weitere Methode, um die Verteilung einer numerischen Variable zu visualisie
 
 
 ```{r}
+
 
 ggplot(
   data = exercise_data,
@@ -147,6 +158,9 @@ Die Verwendung von Barplots ist insbesondere dann sinnvoll, wenn wir die Häufig
 
 ```{r}
 
+exercise_data$subj_schichteinstufung
+count(exercise_data, subj_schichteinstufung)
+
 ggplot(
   data = exercise_data,
   mapping = aes(x = subj_schichteinstufung)
@@ -177,7 +191,6 @@ ggplot(
 ```
 
 ### Kuchendiagramm (Pie-Chart)
-
 
 Ein Kuchendiagramm ist in ggplot2 letzendlich nur ein abgewandelter Barplot, bei dem die Säulen des Plots einem polaren Koordinatensystem zugeordnet werden. Bevor wir das Kuchendiagramm visualisieren können, müssen wir in diesem Fall die Häufigkeiten der Kategorien (z.B. der Konfession) schon im Vorhinein berechen. Dies geht sehr leicht mit der Funktion `count()` aus dem dplyr-Package. Danach können wir die Häufigkeit der Kategorien (die Variable *n*) der y-Achse in den Aesthetics zuordnen. Mit der Aesthethic `fill = konfession` wird die Variable in unserem Datensatz über die Farbfüllung im Plot dargestellt. Mittels `coord_polar(theta = "y")` wird das kartesische Koordinatensystem in ein polares Koordinatensystem umgewandelt, um das Kuchendiagramm zu erstellen.
 
@@ -216,8 +229,8 @@ ggplot(
   ) +
   geom_point()  
 
-
 # Anpassungsmöglichkeiten 
+
 ggplot(
   data = exercise_data,
   mapping = aes(x = alter,
@@ -230,7 +243,7 @@ ggplot(
   mapping = aes(x = alter,
                 y = bmi)
   ) +
-  geom_point(size = 0.5) # Größe der Punkte
+  geom_point(size = 0.4, alpha = 0.3) # Größe der Punkte
 
 
 ggplot(
@@ -263,21 +276,29 @@ ggplot(
   ) + 
   geom_bar(stat = "count", position = position_stack())
 
-
 # Definition von verschiedenen Panels statt Farbzuordnung
 
 ggplot(
   data = exercise_data,
-  mapping = aes(x = subj_schichteinstufung)
+  mapping = aes(y = subj_schichteinstufung)
   ) + 
   geom_bar(stat = "count", position = position_dodge(width = 1)) + 
-  facet_wrap(facets = ~geschlecht) # mehrere Panels
-
+  facet_wrap(facets = vars(geschlecht)) # mehrere Panels
 
 
 ggplot(
   data = exercise_data,
-  mapping = aes(x = geschlecht)
+  mapping = aes(y = subj_schichteinstufung)
+  ) + 
+  geom_bar(stat = "count", position = position_dodge(width = 1)) +
+  facet_grid(
+    rows = vars(geschlecht),
+    cols = vars(familienstand)
+  )
+
+ggplot(
+  data = exercise_data,
+  mapping = aes(y = geschlecht)
   ) + 
   geom_bar(stat = "count", position = position_dodge(width = 1)) + 
   facet_wrap(facets = ~subj_schichteinstufung) # Alternativ Schreibweise: facets = vars(subj_schichteinstufung)
@@ -302,7 +323,7 @@ ggplot(
   mapping = aes(x = psychological_distress,
                 fill = subj_schichteinstufung)
   ) + 
-  geom_density(alpha = 0.5)
+  geom_density(alpha = 0.1)
 
 
 # Exkurs
@@ -310,7 +331,8 @@ library(ggridges)
 ggplot(data = exercise_data,
        mapping = aes(x = psychological_distress,
                      y = subj_schichteinstufung,
-                     fill = subj_schichteinstufung)) + 
+                     fill = subj_schichteinstufung
+                     )) + 
   geom_density_ridges()
 
 # für mehr Infos s.h.: https://wilkelab.org/ggridges/
@@ -328,7 +350,8 @@ ggplot(
   mapping = aes(x = alter,
                 y = bmi,
                 color = geschlecht,
-                shape = geschlecht)
+              #  shape = geschlecht
+                )
 ) + 
   geom_point()
 
@@ -354,6 +377,8 @@ ggplot(
 ```
 
 ```{r}
+
+
 ggplot(
   data = exercise_data,
   mapping = aes(x = subj_schichteinstufung,
@@ -371,5 +396,11 @@ ggplot(
   facet_wrap(~geschlecht)
 ```
 
+```{r}
+
+
+
+
+```
 
 

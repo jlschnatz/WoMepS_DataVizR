@@ -1,5 +1,5 @@
 if(!"pacman" %in% installed.packages()) {install.packages("pacman")}
-pacman::p_load(tidyverse, vroom, CGPfunctions, ggrepel, showtext, sysfonts, ggtext)
+pacman::p_load(tidyverse, vroom, CGPfunctions, ggrepel, showtext, sysfonts, ggtext, naniar, countrycode)
 
 font_add_google("Source Sans Pro", "ssp")
 showtext_auto()
@@ -74,19 +74,7 @@ hfi_data %>%
   ggdist::theme_ggdist()
 
 
-hfi_data %>%
-  select(year, countries, region, hf_score, hf_rank) %>%
-  group_by(year) %>%
-  mutate(extremes = case_when(
-    hf_rank %in% tail(sort(hf_rank), 5) ~ "lowest",
-    hf_rank %in% head(sort(hf_rank), 5) ~ "highest",
-    TRUE ~ NA_character_
-  )) %>% 
-  filter(!is.na(extremes)) %>%
-  ungroup() %>%
-  ggplot(aes(x = year, y = hf_score, group = countries)) + 
-  geom_path() + 
-  ggdist::theme_ggdist()
+
   
   
 

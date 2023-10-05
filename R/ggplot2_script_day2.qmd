@@ -1,32 +1,38 @@
 ---
-title: "Workshop: ggplot2"
+title: "Workshop: Datenvisualisierung mit ggplot2"
 title-block-style: "default"
-subtitle  : "Tag 2"
+subtitle  : "Tag II"
 author    : "Arieja Farugie & Luca Schnatz"
 date: "`r Sys.Date()`"
-code-overflow: "wrap"
+code-overflow: wrap
 code-block-bg: true
-code-block-border-left: "#8800FF"
+code-block-border-left: "slategray3"
 smooth-scroll: true
 format: 
   html:
     self-contained: true
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+    message: false
+    warning: false
 toc: true
 touch: true
-theme: "lux"
+theme: cosmo
 toc-title: "Inhalt"
-highlight-style: "printing"
+highlight-style: printing
 institute: "Institut für Psychologie"
 code-copy: true
 code-link: true
+mouse-wheel: true
 ---
 
 ```{r}
 #| message: false
 library(tidyverse)
-library(here)
 
-exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
+exercise_data <- readRDS(url("https://github.com/jlschnatz/WoMepS_DataVizR/raw/main/clean_exercise_data.rds"))
 
 ```
 
@@ -291,12 +297,12 @@ p0 +
 
 ```{r}
 # install.packages("patchwork")
-library(patchwork)
-library(tidyverse)
-library(here)
-
-exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
-glimpse(exercise_data)
+# library(patchwork)
+# library(tidyverse)
+# library(here)
+# 
+# exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
+# glimpse(exercise_data)
 
 ```
 
@@ -360,6 +366,7 @@ print(p4)
 -   `p1 / p2` um zwei Plots in der vertikalen Ebene unter/übereinander darzustellen
 
 ```{r}
+library(patchwork)
 p1 + p2 # oder p1 | p2
 
 p1 / p2

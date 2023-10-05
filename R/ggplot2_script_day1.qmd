@@ -1,36 +1,46 @@
 ---
-title: "Workshop: ggplot2"
+title: "Workshop: Datenvisualisierung mit ggplot2"
 title-block-style: "default"
-subtitle  : "Tag 1"
+subtitle  : "Tag I"
 author    : "Arieja Farugie & Luca Schnatz"
 date: "`r Sys.Date()`"
 code-overflow: wrap
 code-block-bg: true
-code-block-border-left: "#8800FF"
+code-block-border-left: "slategray3"
 smooth-scroll: true
 format: 
   html:
     self-contained: true
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+    message: false
+    warning: false
+    echo: fenced
 toc: true
+code-annotations: below
 touch: true
-theme: "lux"
+theme: cosmo
 toc-title: "Inhalt"
-highlight-style: "printing"
+highlight-style: printing
 institute: "Institut für Psychologie"
 code-copy: true
 code-link: true
+mouse-wheel: true
 ---
 
 # Datensatz laden
 
-Zunächst laden wir den Datensatz. Dieser ist als *.rds* Datei abgespeichert (ein R-spezifisches Datenformat), weswegen wir sie mit dem Befehl `read_rds()` des readr-Packages in R einladen können. Mit `glimpse()` können wir einen Überblick über die verschiedenen Variablen erhalten.
+Zunächst laden wir den Datensatz. Dieser ist als *.rds* Datei abgespeichert (ein R-spezifisches Datenformat), weswegen wir sie mit dem Befehl `readRDS()` in R einladen können. Mit `glimpse()` können wir einen Überblick über die verschiedenen Variablen erhalten.
 
 ```{r}
 #| message: false
 library(tidyverse)
-library(here)
 
-exercise_data <- read_rds(here("data/exercise_data/clean_exercise_data.rds"))
+
+exercise_data <- readRDS(url("https://github.com/jlschnatz/WoMepS_DataVizR/raw/main/clean_exercise_data.rds"))
+
 glimpse(exercise_data)
 
 ```
@@ -157,9 +167,6 @@ Die Verwendung von Barplots ist insbesondere dann sinnvoll, wenn wir die Häufig
 
 
 ```{r}
-
-exercise_data$subj_schichteinstufung
-count(exercise_data, subj_schichteinstufung)
 
 ggplot(
   data = exercise_data,
